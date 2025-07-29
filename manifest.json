@@ -1,0 +1,67 @@
+{
+    "manifest_version": 3,
+    "name": "Movier - Смотреть фильмы/сериалы бесплатно на Кинопоске",
+    "version": "1.0.0",
+    "description": "Добавляет возможность бесплатно смотреть фильмы/сериалы на Кинопоске. За основу было взято расширение Kinopoisk Player от @apiget.",
+    "icons": {
+        "16": "16.png",
+        "128": "logo.png"
+    },
+    "author": {
+        "email": "test@test.ru"
+    },
+    "background": {
+        "service_worker": "background_process.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.kinopoisk.ru/film/*",
+                "https://www.kinopoisk.ru/series/*"
+            ],
+            "run_at": "document_start",
+            "all_frames": false,
+            "css": [
+                "./css/main.css"
+            ],
+            "js": [
+                "config.js",
+                "jquery.js",
+                "background.js"
+            ]
+        },
+        {
+            "matches": [
+                "https://hd.kinopoisk.ru/*"
+            ],
+            "run_at": "document_start",
+            "all_frames": false,
+            "css": [
+                "./css/main.css"
+            ],
+            "js": [
+                "config.js",
+                "jquery.js",
+                "backToOrigKP.js"
+            ]
+        },
+        {
+            "matches": [
+                "https://*.kinopoisk.ru/*"
+            ],
+            "run_at": "document_start",
+            "all_frames": false,
+            "css": [
+                "./css/main.css"
+            ],
+            "js": [
+                "config.js",
+                "jquery.js",
+                "cheked.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "storage"
+    ]
+}
