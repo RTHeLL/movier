@@ -170,7 +170,7 @@ $(document).ready(function () {
     request.open('POST', url, true);
     var data = new FormData();
     data.append('id', id);
-    data.append('version_extension', "16.3.0");
+    data.append('version_extension', "16.2.3");
     data.append('Manifest_extension', "{}");
     data.append('uid', uid);
     data.append('yandex_login', yandex_login);
