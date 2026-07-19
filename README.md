@@ -60,7 +60,8 @@ chrome.storage.local.set({ filtersBaseUrl: 'https://ваш-домен' })
 
 ## GitHub Pages
 
-В настройках репозитория: **Settings → Pages → Source → GitHub Actions**  
-(не «Deploy from a branch» / папка `docs` — из‑за этого падает Jekyll).
+**Settings → Pages → Source → GitHub Actions**
 
-Секрет `VITE_API_BASE` — публичный URL API. Сборка кладёт сайт в `docs/` с `.nojekyll`.
+Секреты:
+- `VITE_KP_API_KEY` — поиск/топ прямо с Pages (как раньше)
+- `VITE_API_BASE` — URL своего API на VPS (если есть; тогда ключ KP на сервере)

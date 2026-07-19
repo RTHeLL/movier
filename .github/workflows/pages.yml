@@ -36,13 +36,15 @@ jobs:
         env:
           VITE_BASE: /movier/
           VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          VITE_KP_API_KEY: ${{ secrets.VITE_KP_API_KEY }}
         run: npm run build
 
       - name: Prepare docs/
         run: |
           rm -rf docs
-          mkdir -p docs
+          mkdir -p docs/filters
           cp -a web/dist/. docs/
+          cp -a filters/. docs/filters/
           touch docs/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
