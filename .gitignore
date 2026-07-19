@@ -7,3 +7,9 @@ deploy/.env
 .DS_Store
 *.log
 web/.env
+dist/
+extension/_metadata/
+extension.pem
+extension.crx
+*.pem
+*.crx

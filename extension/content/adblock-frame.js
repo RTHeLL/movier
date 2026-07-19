@@ -1,18 +1,20 @@
-(function () {
-  'use strict';
+'use strict';
 
+(function () {
   try {
     if (window.top === window) {
       var host = location.hostname || '';
       if (
         host.indexOf('kinopoisk.ru') !== -1 ||
-        host.indexOf('localhost') !== -1 ||
-        host.indexOf('127.0.0.1') !== -1
+        host === 'localhost' ||
+        host === '127.0.0.1'
       ) {
         return;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    /* cross-origin frame: continue */
+  }
 
   var CSS =
     '.ads,.ad,.advert,.advertisement,.ad-container,.ad-wrapper,.adsbox,' +
@@ -27,10 +29,12 @@
 
   function inject() {
     if (document.getElementById('movier-adblock-style')) return;
+    var root = document.documentElement || document.head || document.body;
+    if (!root) return;
     var style = document.createElement('style');
     style.id = 'movier-adblock-style';
     style.textContent = CSS;
-    (document.documentElement || document.head || document.body).appendChild(style);
+    root.appendChild(style);
   }
 
   function hideMatches(root) {
@@ -53,24 +57,33 @@
     hideMatches(document);
   }
 
+  var scheduled = false;
+  function scheduleScan(node) {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(function () {
+      scheduled = false;
+      inject();
+      hideMatches(node || document);
+    });
+  }
+
   try {
     new MutationObserver(function (mutations) {
-      inject();
       for (var i = 0; i < mutations.length; i++) {
         for (var j = 0; j < mutations[i].addedNodes.length; j++) {
           var n = mutations[i].addedNodes[j];
-          if (n.nodeType === 1) hideMatches(n);
+          if (n.nodeType === 1) {
+            scheduleScan(n);
+            return;
+          }
         }
       }
     }).observe(document.documentElement || document, {
       childList: true,
       subtree: true,
     });
-  } catch (e2) {}
-
-  try {
-    window.open = function () {
-      return null;
-    };
-  } catch (e3) {}
+  } catch (e2) {
+    /* ignore */
+  }
 })();

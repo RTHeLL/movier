@@ -20,6 +20,17 @@ jobs:
             server/package-lock.json
             web/package-lock.json
 
+      - name: Validate extension
+        run: npm run validate:extension
+
+      - name: Pack extension
+        run: npm run pack:extension
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: movier-extension
+          path: dist/movier-extension.zip
+
       - working-directory: server
         run: npm ci && npm run build
 

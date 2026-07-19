@@ -7,6 +7,7 @@ import {
 import { el } from '../dom'
 import { navigate } from '../router'
 import { renderFilmCards } from './cards'
+import { renderInstallBanner } from './install-banner'
 
 export async function renderHomePage(container: HTMLElement): Promise<void> {
   const header = el('header', 'site-header')
@@ -21,13 +22,28 @@ export async function renderHomePage(container: HTMLElement): Promise<void> {
   brand.append(logo, el('h1', 'site-title', 'Movier'))
   header.append(brand, el('p', 'site-subtitle', 'Поиск и просмотр.'))
 
+  renderInstallBanner(header)
 
   const filtersHint = el('p', 'site-filters-hint')
   const filtersLink = document.createElement('a')
   filtersLink.href = filterListSubscribeUrl()
   filtersLink.textContent = 'фильтры рекламы'
   filtersLink.rel = 'noopener noreferrer'
-  filtersHint.append(document.createTextNode('uBlock: '), filtersLink)
+  const privacyLink = document.createElement('a')
+  privacyLink.href = `${import.meta.env.BASE_URL}privacy.html`
+  privacyLink.textContent = 'конфиденциальность'
+  privacyLink.rel = 'noopener noreferrer'
+  const installLink = document.createElement('a')
+  installLink.href = '#/install'
+  installLink.textContent = 'установка расширения'
+  filtersHint.append(
+    document.createTextNode('uBlock: '),
+    filtersLink,
+    document.createTextNode(' · '),
+    privacyLink,
+    document.createTextNode(' · '),
+    installLink,
+  )
   header.append(filtersHint)
 
   const searchRow = el('div', 'search-row')

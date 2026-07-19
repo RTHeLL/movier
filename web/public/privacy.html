@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Политика конфиденциальности — Movier</title>
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <style>
+      :root {
+        --bg: #0c0c0e;
+        --text: #ececf1;
+        --muted: #9898a8;
+        --accent: #ff9800;
+        --border: #2a2a34;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.55;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 4rem;
+      }
+      a {
+        color: var(--accent);
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.5rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 1.75rem 0 0.6rem;
+      }
+      p,
+      li {
+        color: var(--text);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 2rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/">← Movier</a></p>
+      <h1>Политика конфиденциальности</h1>
+      <p class="muted">Расширение Movier и сайт kurduk.store. Дата обновления: 19 июля 2026 г.</p>
+
+      <h2>1. Оператор</h2>
+      <p>
+        Политика описывает обработку данных расширением Movier для Chromium и
+        связанным сайтом
+        <a href="https://kurduk.store/">https://kurduk.store/</a>.
+      </p>
+
+      <h2>2. Какие данные обрабатываются</h2>
+      <p>Расширение может обрабатывать следующие данные:</p>
+      <ul>
+        <li>
+          <strong>ID фильма или сериала</strong> — извлекается из URL страницы
+          Кинопоиска (<code>kinopoisk.ru/film/…</code> или
+          <code>/series/…</code>) и передаётся сервису плееров для получения
+          списка iframe.
+        </li>
+        <li>
+          <strong>Технические идентификаторы расширения</strong> —
+          случайно сгенерированные значения <code>UID</code>,
+          <code>apiget_uid</code> и <code>fake_yandex_login</code>, хранимые в
+          <code>chrome.storage.local</code>. Они нужны для совместимости с API
+          плееров и не являются вашим логином или паролем Яндекса/Кинопоиска.
+        </li>
+        <li>
+          <strong>Флаг согласия</strong> (<code>privacyAccepted</code>) и
+          настройка URL обновления фильтров рекламы
+          (<code>filtersBaseUrl</code>).
+        </li>
+        <li>
+          <strong>Правила блокировки рекламы</strong> — загружаются с
+          разрешённого сервера фильтров (по умолчанию
+          <code>https://kurduk.store/filters/movier-dnr.json</code>) и
+          применяются через declarativeNetRequest.
+        </li>
+      </ul>
+      <p>
+        Расширение <strong>не</strong> отправляет полный HTML страницы
+        Кинопоиска, cookie сайта Кинопоиска, пароли, платежные данные и историю
+        посещений произвольных сайтов на наши серверы.
+      </p>
+
+      <h2>3. Куда передаются данные</h2>
+      <ul>
+        <li>
+          <strong>kp.apiget.ru</strong> — сторонний сервис списка плееров.
+          Передаются ID фильма, технические идентификаторы и минимальный
+          stub-HTML (не содержимое вашей сессии на Кинопоиске).
+        </li>
+        <li>
+          <strong>kurduk.store</strong> (или другой разрешённый
+          <code>filtersBaseUrl</code>) — загрузка JSON-правил блокировки
+          рекламы.
+        </li>
+      </ul>
+      <p>
+        Обработка на стороне <code>kp.apiget.ru</code> регулируется политикой
+        этого сервиса. Мы не контролируем хранение и дальнейшее использование
+        данных этим оператором.
+      </p>
+
+      <h2>4. Цели обработки</h2>
+      <ul>
+        <li>показ плееров на страницах фильмов/сериалов Кинопоиска;</li>
+        <li>блокировка рекламных сетевых запросов и элементов в плеерах;</li>
+        <li>обновление списков блокировки;</li>
+        <li>учёт согласия пользователя перед запросом плееров.</li>
+      </ul>
+
+      <h2>5. Хранение</h2>
+      <p>
+        Идентификаторы и настройки хранятся локально в
+        <code>chrome.storage.local</code> на вашем устройстве. Вы можете удалить
+        их, удалив расширение или очистив данные расширения в настройках
+        Chrome.
+      </p>
+
+      <h2>6. Передача третьим лицам и продажа</h2>
+      <p>
+        Мы не продаём персональные данные. Передача на
+        <code>kp.apiget.ru</code> необходима для основной функции расширения
+        (получение плееров). Данные не используются для кредитного скоринга.
+      </p>
+
+      <h2>7. Согласие</h2>
+      <p>
+        Перед первой загрузкой плееров расширение запрашивает явное согласие в
+        интерфейсе на странице Кинопоиска и/или на странице настроек расширения.
+        Без согласия запрос к сервису плееров не выполняется.
+      </p>
+
+      <h2>8. Дети</h2>
+      <p>
+        Расширение не предназначено для детей младше 13 лет и не собирает данные
+        детей осознанно.
+      </p>
+
+      <h2>9. Изменения</h2>
+      <p>
+        При существенном изменении практик обработки данных политика будет
+        обновлена на этой странице, а в расширении может потребоваться повторное
+        согласие.
+      </p>
+
+      <h2>10. Соответствие Chrome Web Store User Data Policy</h2>
+      <p>
+        The use of information received from Google APIs (если применимо) and
+        user data handled by this extension will adhere to the Chrome Web Store
+        User Data Policy, including the Limited Use requirements.
+      </p>
+
+      <h2>11. Контакты</h2>
+      <p>
+        Вопросы по конфиденциальности: через страницу
+        <a href="https://kurduk.store/">kurduk.store</a>
+        или issues репозитория проекта Movier на GitHub.
+      </p>
+
+      <hr />
+      <p class="muted">
+        Сайт Movier (поиск фильмов) может отдельно обращаться к API Кинопоиска /
+        вашему backend; это описано в настройках развёртывания и не смешивается с
+        данными расширения без необходимости.
+      </p>
+    </main>
+  </body>
+</html>

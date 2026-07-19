@@ -372,3 +372,182 @@ body {
   height: 100%;
   border: none;
 }
+
+/* —— Установка расширения —— */
+
+.install-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.25rem 0 0.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 152, 0, 0.45);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 152, 0, 0.18), transparent 55%),
+    linear-gradient(135deg, #1a1410, var(--surface));
+  box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.08);
+}
+
+.install-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: min(100%, 220px);
+  flex: 1 1 200px;
+}
+
+.install-banner-title {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.install-banner-desc {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.install-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.install-hero {
+  margin: 0.5rem 0 1.25rem;
+  padding: 1.5rem 1.35rem;
+  border-radius: calc(var(--radius) + 4px);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgba(255, 152, 0, 0.14), transparent 50%),
+    var(--surface);
+}
+
+.install-kicker {
+  margin: 0 0 0.4rem;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.install-title {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.install-lead {
+  margin: 0 0 0.85rem;
+  color: #c8c8d4;
+  max-width: 42rem;
+}
+
+.install-meta {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.install-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.install-note {
+  margin: 0 0 1.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.install-note a {
+  color: var(--accent);
+}
+
+.install-steps {
+  list-style: none;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.install-step {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.install-step-num {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: rgba(255, 152, 0, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(255, 152, 0, 0.35);
+}
+
+.install-step-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.install-step-body .install-p {
+  margin: 0 0 0.45rem;
+  color: #c8c8d4;
+  font-size: 0.95rem;
+}
+
+.install-step-body .install-p:last-child {
+  margin-bottom: 0;
+}
+
+.install-step-body code,
+.install-card code {
+  font-size: 0.88em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #0a0a0c;
+  border: 1px solid var(--border);
+}
+
+.install-step-body a,
+.install-card a:not(.btn) {
+  color: var(--accent);
+}
+
+.install-card {
+  margin-bottom: 1.25rem;
+  padding: 1.1rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.install-card .install-p {
+  margin: 0 0 0.65rem;
+  color: #c8c8d4;
+}
+
+.install-card .install-p:last-child {
+  margin-bottom: 0;
+}
+
+.install-card .btn {
+  margin-top: 0.35rem;
+}

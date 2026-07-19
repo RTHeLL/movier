@@ -4,11 +4,13 @@
 
 ## Структура
 
-- `extension/` — расширение
+- `extension/` — расширение (Manifest V3)
 - `web/` — сайт (Vite)
 - `server/` — API
 - `filters/` — списки блокировки рекламы
 - `deploy/` — Docker Compose + Caddy
+- `store/` — тексты и чеклист для Chrome Web Store
+- `dist/movier-extension.zip` — production-архив после `npm run pack:extension`
 
 ## Локальный запуск
 
@@ -34,17 +36,32 @@ cp .env.example .env   # SITE_DOMAIN, ACME_EMAIL, KP_API_KEY, CORS_ORIGINS
 docker compose up -d --build
 ```
 
-Удалённое обновление DNR в расширении:
+Удалённое обновление DNR в расширении (только allowlist URL, по умолчанию `https://kurduk.store`):
 
 ```js
-chrome.storage.local.set({ filtersBaseUrl: 'https://ваш-домен' })
+chrome.storage.local.set({ filtersBaseUrl: 'https://kurduk.store' })
 ```
 
 Подписка uBlock/AdGuard: `https://ваш-домен/filters/movier.txt`
 
 ## Расширение
 
-`chrome://extensions/` → режим разработчика → загрузить папку `extension/`.
+Разработка: `chrome://extensions/` → режим разработчика → загрузить папку `extension/`.
+
+Production-пакет для Chrome Web Store и ручной установки:
+
+```bash
+npm run pack:extension
+```
+
+Артефакты:
+- `dist/movier-extension.zip` — локальная сборка
+- `releases/extension/` — файлы в репозитории GitHub (ZIP + unpacked)
+- `web/public/extension/` — скачивание с сайта
+
+Инструкция на сайте: https://kurduk.store/#/install  
+Политика конфиденциальности: https://kurduk.store/privacy.html  
+Материалы витрины: `store/STORE_LISTING.md`
 
 ## API
 

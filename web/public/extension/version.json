@@ -1,0 +1,14 @@
+{
+  "name": "Movier",
+  "version": "1.3.0",
+  "updated": "2026-07-19",
+  "zip": "movier-extension.zip",
+  "bytes": 25560,
+  "files": 15,
+  "github": {
+    "repo": "https://github.com/RTHeLL/movier",
+    "releasesDir": "https://github.com/RTHeLL/movier/tree/main/releases/extension",
+    "zipRaw": "https://github.com/RTHeLL/movier/raw/main/releases/extension/movier-extension.zip",
+    "unpacked": "https://github.com/RTHeLL/movier/tree/main/releases/extension/unpacked"
+  }
+}

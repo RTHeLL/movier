@@ -6,6 +6,10 @@ on:
     branches: [main]
     paths:
       - 'web/**'
+      - 'extension/**'
+      - 'filters/**'
+      - 'scripts/**'
+      - 'releases/extension/**'
       - '.github/workflows/pages.yml'
 
 permissions:
@@ -29,6 +33,9 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
+      - name: Pack extension for site downloads
+        run: npm run pack:extension
+
       - working-directory: web
         run: npm ci
 
@@ -42,10 +49,19 @@ jobs:
       - name: Prepare docs/
         run: |
           rm -rf docs
-          mkdir -p docs/filters
+          mkdir -p docs/filters docs/extension
           cp -a web/dist/. docs/
           cp -a filters/. docs/filters/
+          cp -a web/public/extension/. docs/extension/
+          # зеркало unpacked с GitHub releases (если pack уже положил в releases/)
+          if [ -d releases/extension/unpacked ]; then
+            mkdir -p docs/extension/unpacked
+            cp -a releases/extension/unpacked/. docs/extension/unpacked/
+          fi
           touch docs/.nojekyll
+          test -f docs/privacy.html
+          test -f docs/extension/movier-extension.zip
+          test -f docs/extension/version.json
 
       - uses: actions/upload-pages-artifact@v3
         with:

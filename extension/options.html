@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Movier — настройки</title>
+    <link rel="stylesheet" href="css/pages.css" />
+  </head>
+  <body class="page-options">
+    <main class="options-main">
+      <header class="options-header">
+        <img src="128.png" width="64" height="64" alt="Movier" />
+        <div>
+          <h1>Movier</h1>
+          <p class="muted">Настройки и согласие на обработку данных</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <h2>Конфиденциальность</h2>
+        <p>
+          Расширение запрашивает список плееров у
+          <code>kp.apiget.ru</code> по ID фильма/сериала со страницы Кинопоиска.
+          Передаются только технические идентификаторы расширения. Полный HTML
+          страницы и cookie Кинопоиска не отправляются.
+        </p>
+        <p>
+          <a
+            href="https://kurduk.store/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Политика конфиденциальности</a
+          >
+        </p>
+        <label class="check-row">
+          <input type="checkbox" id="privacyAccepted" />
+          <span
+            >Я ознакомился с политикой и согласен на запрос плееров у
+            kp.apiget.ru</span
+          >
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Обновление фильтров рекламы</h2>
+        <p class="muted">
+          Remote DNR-правила загружаются только с разрешённых базовых URL
+          (по умолчанию kurduk.store).
+        </p>
+        <label class="field">
+          <span>filtersBaseUrl</span>
+          <input
+            type="url"
+            id="filtersBaseUrl"
+            placeholder="https://kurduk.store"
+            autocomplete="off"
+          />
+        </label>
+        <div class="row">
+          <button type="button" class="btn" id="saveBtn">Сохранить</button>
+          <button type="button" class="btn btn-ghost" id="refreshBtn">
+            Обновить фильтры сейчас
+          </button>
+        </div>
+        <p id="status" class="status" role="status"></p>
+      </section>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

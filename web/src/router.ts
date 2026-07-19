@@ -1,8 +1,15 @@
 import { renderFilmPage } from './ui/film'
 import { renderHomePage } from './ui/home'
+import { renderInstallPage } from './ui/install'
 
-function parseRoute(): { name: 'home' } | { name: 'film'; id: number } {
+type Route =
+  | { name: 'home' }
+  | { name: 'film'; id: number }
+  | { name: 'install' }
+
+function parseRoute(): Route {
   const raw = window.location.hash.replace(/^#/, '').trim() || '/'
+  if (raw === '/install' || raw === 'install') return { name: 'install' }
   const filmMatch = /^\/film\/(\d+)\/?$/.exec(raw)
   if (filmMatch) {
     const id = parseInt(filmMatch[1], 10)
@@ -24,6 +31,8 @@ export function initRouter(): void {
     const route = parseRoute()
     if (route.name === 'film') {
       void renderFilmPage(app, route.id)
+    } else if (route.name === 'install') {
+      void renderInstallPage(app)
     } else {
       void renderHomePage(app)
     }
