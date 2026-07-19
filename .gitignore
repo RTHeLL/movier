@@ -7,4 +7,3 @@ deploy/.env
 .DS_Store
 *.log
 web/.env
-docs/
