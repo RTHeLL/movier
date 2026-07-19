@@ -101,6 +101,16 @@ for (const p of manifest.host_permissions || []) {
   }
 }
 
+for (const cs of manifest.content_scripts || []) {
+  for (const m of cs.matches || []) {
+    if (FORBIDDEN_HOST_EXACT.has(m)) {
+      errors.push(
+        'broad content_scripts.matches not allowed (use optional + scripting): ' + m,
+      );
+    }
+  }
+}
+
 const jsFiles = walkJs(extDir);
 for (const file of jsFiles) {
   const rel = path.relative(extDir, file);

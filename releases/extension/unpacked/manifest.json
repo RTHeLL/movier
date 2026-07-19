@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Movier",
-  "version": "1.3.0",
-  "description": "Плееры на страницах Кинопоиска и блокировка рекламы в плеерах.",
+  "version": "1.3.1",
+  "description": "Плееры на Кинопоиске: смотрите фильмы и сериалы прямо на странице и без лишней рекламы в плеерах.",
   "homepage_url": "https://kurduk.store/",
   "icons": {
     "16": "16.png",
@@ -40,22 +40,20 @@
       "run_at": "document_idle",
       "css": ["css/main.css"],
       "js": ["content/hd-redirect.js"]
-    },
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "run_at": "document_start",
-      "all_frames": true,
-      "match_about_blank": true,
-      "js": ["content/adblock-frame.js"]
     }
   ],
-  "permissions": ["storage", "alarms", "declarativeNetRequest"],
+  "permissions": ["storage", "alarms", "declarativeNetRequest", "scripting"],
   "host_permissions": [
     "https://kp.apiget.ru/*",
     "https://kurduk.store/*",
     "https://rthell.github.io/*"
   ],
-  "optional_host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
   "declarative_net_request": {
     "rule_resources": [
       {

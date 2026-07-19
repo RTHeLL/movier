@@ -42,6 +42,21 @@
       </section>
 
       <section class="card">
+        <h2>Блокировка рекламы в фреймах плееров</h2>
+        <p class="muted">
+          Сетевая блокировка (declarativeNetRequest) работает всегда. Дополнительное
+          скрытие рекламных блоков внутри iframe плееров требует отдельного
+          разрешения браузера — оно запрашивается только по вашей кнопке и не
+          выдаётся при установке.
+        </p>
+        <label class="check-row">
+          <input type="checkbox" id="frameAdblockEnabled" />
+          <span>Включить element-hiding рекламы во фреймах плееров</span>
+        </label>
+        <p id="adblockStatus" class="status" role="status"></p>
+      </section>
+
+      <section class="card">
         <h2>Обновление фильтров рекламы</h2>
         <p class="muted">
           Remote DNR-правила загружаются только с разрешённых базовых URL

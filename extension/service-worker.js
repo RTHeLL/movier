@@ -171,14 +171,100 @@ async function refreshRemoteFilters() {
   }
 }
 
-chrome.runtime.onInstalled.addListener(function (details) {
-  void ensureIds().then(function () {
-    return chrome.storage.local.get(['filtersBaseUrl']);
-  }).then(function (stored) {
-    if (!stored.filtersBaseUrl) {
-      return chrome.storage.local.set({ filtersBaseUrl: DEFAULT_FILTERS_BASE });
-    }
+var ADBLOCK_SCRIPT_ID = 'movier-adblock-frames';
+var ADBLOCK_ORIGINS = ['http://*/*', 'https://*/*'];
+
+async function hasFrameAdblockPermission() {
+  return chrome.permissions.contains({ origins: ADBLOCK_ORIGINS });
+}
+
+async function registerFrameAdblockScript() {
+  var existing = await chrome.scripting.getRegisteredContentScripts({
+    ids: [ADBLOCK_SCRIPT_ID],
   });
+  if (existing && existing.length) {
+    await chrome.scripting.updateContentScripts([
+      {
+        id: ADBLOCK_SCRIPT_ID,
+        js: ['content/adblock-frame.js'],
+        matches: ADBLOCK_ORIGINS,
+        allFrames: true,
+        matchOriginAsFallback: true,
+        runAt: 'document_start',
+        persistAcrossSessions: true,
+      },
+    ]);
+    return;
+  }
+  await chrome.scripting.registerContentScripts([
+    {
+      id: ADBLOCK_SCRIPT_ID,
+      js: ['content/adblock-frame.js'],
+      matches: ADBLOCK_ORIGINS,
+      allFrames: true,
+      matchOriginAsFallback: true,
+      runAt: 'document_start',
+      persistAcrossSessions: true,
+    },
+  ]);
+}
+
+async function unregisterFrameAdblockScript() {
+  try {
+    await chrome.scripting.unregisterContentScripts({
+      ids: [ADBLOCK_SCRIPT_ID],
+    });
+  } catch (e) {
+    /* already unregistered */
+  }
+}
+
+async function syncFrameAdblock() {
+  var stored = await chrome.storage.local.get(['frameAdblockEnabled']);
+  var wants = !!stored.frameAdblockEnabled;
+  var allowed = await hasFrameAdblockPermission();
+  if (wants && allowed) {
+    await registerFrameAdblockScript();
+    return { ok: true, enabled: true };
+  }
+  await unregisterFrameAdblockScript();
+  if (wants && !allowed) {
+    await chrome.storage.local.set({ frameAdblockEnabled: false });
+    return { ok: true, enabled: false, needPermission: true };
+  }
+  return { ok: true, enabled: false };
+}
+
+async function enableFrameAdblock() {
+  await chrome.storage.local.set({ frameAdblockEnabled: true });
+  var allowed = await hasFrameAdblockPermission();
+  if (!allowed) {
+    await chrome.storage.local.set({ frameAdblockEnabled: false });
+    return { ok: false, enabled: false, needPermission: true };
+  }
+  await registerFrameAdblockScript();
+  return { ok: true, enabled: true };
+}
+
+async function disableFrameAdblock() {
+  await chrome.storage.local.set({ frameAdblockEnabled: false });
+  await unregisterFrameAdblockScript();
+  return { ok: true, enabled: false };
+}
+
+chrome.runtime.onInstalled.addListener(function (details) {
+  void ensureIds()
+    .then(function () {
+      return chrome.storage.local.get(['filtersBaseUrl']);
+    })
+    .then(function (stored) {
+      if (!stored.filtersBaseUrl) {
+        return chrome.storage.local.set({ filtersBaseUrl: DEFAULT_FILTERS_BASE });
+      }
+    })
+    .then(function () {
+      return syncFrameAdblock();
+    });
 
   chrome.alarms.create(ALARM_FILTERS, { periodInMinutes: 360 });
   void refreshRemoteFilters();
@@ -186,6 +272,14 @@ chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === 'install') {
     void chrome.runtime.openOptionsPage();
   }
+});
+
+chrome.runtime.onStartup.addListener(function () {
+  void syncFrameAdblock();
+});
+
+chrome.permissions.onRemoved.addListener(function () {
+  void syncFrameAdblock();
 });
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
@@ -224,6 +318,33 @@ chrome.runtime.onMessage.addListener(function (message, _sender, sendResponse) {
   if (message.type === 'GET_PRIVACY_STATUS') {
     chrome.storage.local.get(['privacyAccepted']).then(function (stored) {
       sendResponse({ ok: true, accepted: !!stored.privacyAccepted });
+    });
+    return true;
+  }
+
+  if (message.type === 'GET_FRAME_ADBLOCK_STATUS') {
+    Promise.all([
+      chrome.storage.local.get(['frameAdblockEnabled']),
+      hasFrameAdblockPermission(),
+    ]).then(function (parts) {
+      var stored = parts[0];
+      var allowed = parts[1];
+      sendResponse({
+        ok: true,
+        enabled: !!stored.frameAdblockEnabled && allowed,
+        hasPermission: allowed,
+      });
+    });
+    return true;
+  }
+
+  if (message.type === 'SET_FRAME_ADBLOCK') {
+    var enable = !!message.enabled;
+    var op = enable ? enableFrameAdblock() : disableFrameAdblock();
+    op.then(function (result) {
+      sendResponse(result);
+    }).catch(function () {
+      sendResponse({ ok: false, enabled: false });
     });
     return true;
   }
