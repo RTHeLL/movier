@@ -62,6 +62,9 @@ chrome.storage.local.set({ filtersBaseUrl: 'https://ваш-домен' })
 
 **Settings → Pages → Source → GitHub Actions**
 
+С кастомным доменом сайт на корне: `https://kurduk.store/` (не `/movier/`).  
+`https://rthell.github.io/movier/` после смены base тоже будет вести на корень репозитория Pages.
+
 Секреты:
-- `VITE_KP_API_KEY` — поиск/топ прямо с Pages (как раньше)
-- `VITE_API_BASE` — URL своего API на VPS (если есть; тогда ключ KP на сервере)
+- `VITE_KP_API_KEY` — поиск/топ с Pages
+- `VITE_API_BASE` — URL API на VPS (если есть)

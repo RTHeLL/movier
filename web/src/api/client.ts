@@ -17,12 +17,11 @@ function kpApiKey(): string {
   return k ? String(k).trim() : ''
 }
 
-/** BFF: явный VITE_API_BASE, либо same-origin /api (Vite proxy / VPS). Не на github.io. */
+/** BFF: VITE_API_BASE, либо local/VPS same-origin. На Pages — прямой KP API. */
 function useBff(): boolean {
   if (apiBase()) return true
-  if (typeof window !== 'undefined' && /\.github\.io$/i.test(location.hostname)) {
-    return false
-  }
+  if (import.meta.env.DEV) return true
+  if (kpApiKey()) return false
   return true
 }
 
