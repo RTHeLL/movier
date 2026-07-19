@@ -1,0 +1,12 @@
+{
+  "name": "movier",
+  "private": true,
+  "version": "1.2.0",
+  "scripts": {
+    "dev:server": "npm run dev --prefix server",
+    "dev:web": "npm run dev --prefix web",
+    "build:server": "npm run build --prefix server",
+    "build:web": "npm run build --prefix web",
+    "build": "npm run build:server && npm run build:web"
+  }
+}

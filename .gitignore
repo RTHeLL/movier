@@ -1,4 +1,10 @@
 web/node_modules
+web/dist
+server/node_modules
+server/dist
+server/.env
+deploy/.env
 .DS_Store
 *.log
 web/.env
+docs/

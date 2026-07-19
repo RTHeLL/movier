@@ -1,9 +1,9 @@
-name: Публикация GitHub Pages
+name: GitHub Pages
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'web/**'
       - '.github/workflows/pages.yml'
@@ -22,23 +22,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
           cache-dependency-path: web/package-lock.json
-
-      - name: Установка зависимостей
-        working-directory: web
+      - working-directory: web
         run: npm ci
-
-      - name: Сборка
-        working-directory: web
+      - working-directory: web
         env:
-          VITE_KP_API_KEY: ${{ secrets.VITE_KP_API_KEY }}
+          VITE_BASE: /movier/
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
         run: npm run build
-
+      - run: |
+          rm -rf docs
+          mkdir -p docs
+          cp -a web/dist/. docs/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

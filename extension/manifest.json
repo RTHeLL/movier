@@ -1,14 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "Movier - Смотреть фильмы/сериалы бесплатно на Кинопоске",
-    "version": "1.0.0",
-    "description": "Добавляет возможность бесплатно смотреть фильмы/сериалы на Кинопоске. За основу было взято расширение Kinopoisk Player от @apiget.",
+    "name": "Movier",
+    "version": "1.2.0",
+    "description": "Плееры на Кинопоиске и блокировка рекламы в плеерах.",
     "icons": {
         "16": "16.png",
         "128": "logo.png"
-    },
-    "author": {
-        "email": "test@test.ru"
     },
     "background": {
         "service_worker": "background_process.js"
@@ -20,48 +17,39 @@
                 "https://www.kinopoisk.ru/series/*"
             ],
             "run_at": "document_start",
-            "all_frames": false,
-            "css": [
-                "./css/main.css"
-            ],
-            "js": [
-                "config.js",
-                "jquery.js",
-                "background.js"
-            ]
+            "css": ["./css/main.css"],
+            "js": ["config.js", "jquery.js", "background.js"]
         },
         {
-            "matches": [
-                "https://hd.kinopoisk.ru/*"
-            ],
+            "matches": ["https://hd.kinopoisk.ru/*"],
             "run_at": "document_start",
-            "all_frames": false,
-            "css": [
-                "./css/main.css"
-            ],
-            "js": [
-                "config.js",
-                "jquery.js",
-                "backToOrigKP.js"
-            ]
+            "css": ["./css/main.css"],
+            "js": ["config.js", "jquery.js", "backToOrigKP.js"]
         },
         {
-            "matches": [
-                "https://*.kinopoisk.ru/*"
-            ],
+            "matches": ["http://*/*", "https://*/*"],
             "run_at": "document_start",
-            "all_frames": false,
-            "css": [
-                "./css/main.css"
-            ],
-            "js": [
-                "config.js",
-                "jquery.js",
-                "cheked.js"
-            ]
+            "all_frames": true,
+            "match_about_blank": true,
+            "js": ["adblock-frame.js"]
         }
     ],
     "permissions": [
-        "storage"
-    ]
+        "storage",
+        "alarms",
+        "declarativeNetRequest"
+    ],
+    "host_permissions": [
+        "https://*/*",
+        "http://*/*"
+    ],
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "movier_ads",
+                "enabled": true,
+                "path": "rules/adblock.json"
+            }
+        ]
+    }
 }

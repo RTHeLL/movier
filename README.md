@@ -1,98 +1,63 @@
 # Movier
 
-Расширение для браузера и статический сайт: поиск по Кинопоиску и просмотр. За основу расширения взято Kinopoisk Player от @apiget.
+Расширение Chromium и сайт для поиска и просмотра с Кинопоиска.
 
-## Веб-сайт (GitHub Pages)
+## Структура
 
-Статическое приложение в каталоге [`web/`](web/): поиск по названию и открытие по ID Кинопоиска, карточка фильма и плееры через тот же бэкенд, что и у расширения.
+- `extension/` — расширение
+- `web/` — сайт (Vite)
+- `server/` — API
+- `filters/` — списки блокировки рекламы
+- `deploy/` — Docker Compose + Caddy
 
-### Сборка и деплой
-
-1. Зарегистрируйтесь на [Kinopoisk API Unofficial](https://kinopoiskapiunofficial.tech/) и получите API-ключ.
-2. В каталоге `web/` создайте файл `.env`:
-
-   ```
-   VITE_KP_API_KEY=ваш_ключ
-   ```
-
-3. Установите зависимости и соберите проект:
-
-   ```bash
-   cd web
-   npm install
-   npm run build
-   ```
-
-   Сборка по умолчанию выводится в **`docs/`** в корне репозитория (удобно для GitHub Pages → ветка `main`, папка `/docs`).
-
-4. В настройках репозитория GitHub: **Settings → Pages → Build and deployment → Branch**: `main`, папка **`/docs`**.
-
-Для **user site** (`username.github.io`) или другого базового пути измените `base` в [`web/vite.config.ts`](web/vite.config.ts).
-
-**Важно:** ключ `VITE_KP_API_KEY` попадает в собранный JavaScript; для публичного репозитория используйте лимиты API и не публикуйте ключ в коммитах — задавайте его через секреты CI при сборке (см. [`.github/workflows/pages.yml`](.github/workflows/pages.yml)).
-
-### Локальный запуск
+## Локальный запуск
 
 ```bash
+# API
+cd server
+cp .env.example .env   # задайте KP_API_KEY
+npm install && npm run dev
+
+# Сайт (другой терминал)
 cd web
-npm install
-cp .env.example .env   # и пропишите ключ
-npm run dev
+npm install && npm run dev
 ```
 
-## Расширение для браузера
+Ключ API: [kinopoiskapiunofficial.tech](https://kinopoiskapiunofficial.tech/).  
+Vite проксирует `/api` и `/filters` на `http://127.0.0.1:8787`.
 
-Добавляет кнопку просмотра на страницах фильма/сериала на [kinopoisk.ru](https://www.kinopoisk.ru).
+## Деплой (VPS)
 
-### Установка из исходников
-
-1. Склонируйте репозиторий.
-2. Откройте `chrome://extensions/`, включите «Режим разработчика».
-3. Нажмите «Загрузить распакованное расширение» и укажите папку **`extension/`** (в ней должен лежать `manifest.json`).
-
-Файл `.crx`, если он есть в репозитории, лежит в `extension/kinopoisk_player.crx`.
-
-### Структура `extension/`
-
-```
-extension/
-├── manifest.json
-├── background_process.js
-├── background.js
-├── backToOrigKP.js
-├── cheked.js
-├── config.js
-├── jquery.js
-├── css/main.css
-├── 16.png
-└── logo.png
+```bash
+cd deploy
+cp .env.example .env   # SITE_DOMAIN, ACME_EMAIL, KP_API_KEY, CORS_ORIGINS
+docker compose up -d --build
 ```
 
-### Использование
+Удалённое обновление DNR в расширении:
 
-1. Откройте страницу фильма или сериала на Кинопоиске.
-2. Нажмите кнопку «Смотреть бесплатно!» и выберите источник.
+```js
+chrome.storage.local.set({ filtersBaseUrl: 'https://ваш-домен' })
+```
 
-## Устранение неполадок
+Подписка uBlock/AdGuard: `https://ваш-домен/filters/movier.txt`
 
-### Расширение
+## Расширение
 
-- Убедитесь, что загружена именно папка `extension/`.
-- Страница должна быть на `www.kinopoisk.ru` (фильм или сериал).
+`chrome://extensions/` → режим разработчика → загрузить папку `extension/`.
 
-### Сайт
+## API
 
-- Если поиск не работает, проверьте ключ API и лимиты на [kinopoiskapiunofficial.tech](https://kinopoiskapiunofficial.tech/).
-- Если плееры не загружаются, возможна блокировка **CORS** со стороны `kp.apiget.ru` при открытии с домена GitHub Pages — в интерфейсе показывается сообщение; можно открыть [страницу фильма на Кинопоиске](https://www.kinopoisk.ru) с установленным расширением.
+| Метод | Путь |
+|-------|------|
+| GET | `/api/health` |
+| GET | `/api/kp/top?page=` |
+| GET | `/api/kp/search?keyword=&page=` |
+| GET | `/api/kp/films/:id` |
+| POST | `/api/players` |
+| GET | `/filters/movier.txt` |
+| GET | `/filters/movier-dnr.json` |
 
-## Примечания
+## GitHub Pages
 
-- Расширение работает только на официальном сайте Кинопоиск.
-- Для рекламы внутри некоторых плееров подойдёт блокировщик рекламы.
-
-## Лицензия
-
-Расширение создано на основе работы @apiget и распространяется в образовательных целях.
-
-**Версия:** 1.0.0  
-**Совместимость расширения:** Chrome, Edge и другие Chromium-браузеры
+Опционально. Нужен секрет `VITE_API_BASE` с URL API.

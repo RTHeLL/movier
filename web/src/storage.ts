@@ -10,7 +10,6 @@ function randomFromChars(length: number, chars: string): string {
   return result
 }
 
-/** Аналог cookie uid на Кинопоиске — случайная строка */
 export function getOrCreateUid(): string {
   let v = localStorage.getItem(LS_UID)
   if (!v) {
@@ -20,7 +19,6 @@ export function getOrCreateUid(): string {
   return v
 }
 
-/** Как в расширении: постоянный «yandex_login» */
 export function getOrCreateYandexLogin(): string {
   let v = localStorage.getItem(LS_YANDEX)
   if (!v) {
@@ -30,7 +28,6 @@ export function getOrCreateYandexLogin(): string {
   return v
 }
 
-/** UID_KP из расширения (32 символа) */
 export function getOrCreateUidKp(): string {
   let v = localStorage.getItem(LS_UID_KP)
   if (!v) {

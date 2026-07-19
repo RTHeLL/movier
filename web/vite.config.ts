@@ -4,11 +4,16 @@ import { defineConfig } from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-/** Имя репозитория на GitHub Pages (project site). Для user site задайте base: '/' */
 export default defineConfig({
-  base: '/movier/',
+  base: process.env.VITE_BASE || '/',
   build: {
-    outDir: path.resolve(__dirname, '../docs'),
+    outDir: path.resolve(__dirname, 'dist'),
     emptyOutDir: true,
+  },
+  server: {
+    proxy: {
+      '/api': { target: 'http://127.0.0.1:8787', changeOrigin: true },
+      '/filters': { target: 'http://127.0.0.1:8787', changeOrigin: true },
+    },
   },
 })

@@ -1,51 +1,101 @@
-import { KpApiError, searchByKeyword } from '../api/kp-unofficial'
+import {
+  ApiError,
+  fetchTop,
+  filterListSubscribeUrl,
+  searchByKeyword,
+} from '../api/client'
+import { el } from '../dom'
 import { navigate } from '../router'
-
-function el<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className?: string,
-  text?: string,
-): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag)
-  if (className) node.className = className
-  if (text !== undefined) node.textContent = text
-  return node
-}
+import { renderFilmCards } from './cards'
 
 export async function renderHomePage(container: HTMLElement): Promise<void> {
   const header = el('header', 'site-header')
-  const title = el('h1', 'site-title', 'Movier')
-  const subtitle = el(
-    'p',
-    'site-subtitle',
-    'Поиск по Кинопоиску и просмотр. Введите название или ID фильма.',
-  )
-  header.append(title, subtitle)
+
+  const brand = el('div', 'site-brand')
+  const logo = document.createElement('img')
+  logo.className = 'site-logo'
+  logo.src = `${import.meta.env.BASE_URL}logo.png`
+  logo.alt = 'Movier'
+  logo.width = 48
+  logo.height = 48
+  brand.append(logo, el('h1', 'site-title', 'Movier'))
+  header.append(brand, el('p', 'site-subtitle', 'Поиск и просмотр.'))
+
+
+  const filtersHint = el('p', 'site-filters-hint')
+  const filtersLink = document.createElement('a')
+  filtersLink.href = filterListSubscribeUrl()
+  filtersLink.textContent = 'фильтры рекламы'
+  filtersLink.rel = 'noopener noreferrer'
+  filtersHint.append(document.createTextNode('uBlock: '), filtersLink)
+  header.append(filtersHint)
 
   const searchRow = el('div', 'search-row')
   const input = document.createElement('input')
   input.type = 'search'
   input.className = 'search-input'
-  input.placeholder = 'Название или числовой ID…'
+  input.placeholder = 'Название или ID'
   input.setAttribute('autocomplete', 'off')
-  input.setAttribute('aria-label', 'Поиск фильма')
+  input.setAttribute('aria-label', 'Поиск')
 
   const btnSearch = el('button', 'btn btn-primary', 'Найти')
   btnSearch.type = 'button'
-  const btnById = el('button', 'btn btn-ghost', 'Открыть по ID')
+  const btnById = el('button', 'btn btn-ghost', 'По ID')
   btnById.type = 'button'
-  btnById.title = 'Если введён только номер — перейти на страницу фильма'
+  const btnTop = el('button', 'btn btn-ghost', 'Топ')
+  btnTop.type = 'button'
+  searchRow.append(input, btnSearch, btnById, btnTop)
 
-  searchRow.append(input, btnSearch, btnById)
-
+  const sectionTitle = el('h2', 'section-title', 'Популярное')
   const status = el('div', 'status-message')
   const results = el('div', 'results-grid')
+  container.append(header, searchRow, sectionTitle, status, results)
 
-  container.append(header, searchRow, status, results)
+  let lastQuery = ''
 
   const showStatus = (msg: string, kind: 'info' | 'error' | '') => {
     status.textContent = msg
     status.className = 'status-message' + (kind ? ` status-${kind}` : '')
+  }
+
+  const renderPager = (
+    page: number,
+    pagesCount: number,
+    onPage: (p: number) => void,
+  ) => {
+    if (pagesCount <= 1) return
+    const pager = el('div', 'pager')
+    if (page > 1) {
+      const prev = el('button', 'btn btn-ghost', 'Назад')
+      prev.type = 'button'
+      prev.addEventListener('click', () => onPage(page - 1))
+      pager.appendChild(prev)
+    }
+    pager.appendChild(el('span', 'pager-label', `${page} / ${pagesCount}`))
+    if (page < pagesCount) {
+      const next = el('button', 'btn btn-ghost', 'Дальше')
+      next.type = 'button'
+      next.addEventListener('click', () => onPage(page + 1))
+      pager.appendChild(next)
+    }
+    results.appendChild(pager)
+  }
+
+  const loadTop = async (page = 1) => {
+    sectionTitle.textContent = 'Популярное'
+    showStatus('Загрузка…', 'info')
+    results.innerHTML = ''
+    try {
+      const data = await fetchTop(page)
+      showStatus(
+        data.films.length === 0 ? 'Пусто.' : `${page} / ${data.pagesCount}`,
+        data.films.length === 0 ? 'info' : '',
+      )
+      renderFilmCards(results, data.films)
+      renderPager(page, data.pagesCount, (p) => void loadTop(p))
+    } catch (e) {
+      showStatus(e instanceof ApiError ? e.message : 'Ошибка.', 'error')
+    }
   }
 
   const runSearch = async (page = 1) => {
@@ -54,104 +104,41 @@ export async function renderHomePage(container: HTMLElement): Promise<void> {
       showStatus('Введите запрос.', 'error')
       return
     }
-
-    if (/^\d+$/.test(q)) {
-      showStatus(
-        'Похоже на ID. Нажмите «Открыть по ID» или уточните название для поиска.',
-        'info',
-      )
-    }
-
+    lastQuery = q
+    sectionTitle.textContent = `«${q}»`
     showStatus('Загрузка…', 'info')
     results.innerHTML = ''
-
     try {
       const data = await searchByKeyword(q, page)
       showStatus(
         data.films.length === 0
           ? 'Ничего не найдено.'
-          : `Найдено: страница ${page} из ${data.pagesCount}`,
+          : `${page} / ${data.pagesCount}`,
         data.films.length === 0 ? 'info' : '',
       )
-
-      for (const f of data.films) {
-        const card = el('article', 'film-card')
-        card.tabIndex = 0
-        card.setAttribute('role', 'button')
-
-        const poster = el('div', 'film-card-poster')
-        if (f.posterUrlPreview) {
-          const img = document.createElement('img')
-          img.src = f.posterUrlPreview
-          img.alt = ''
-          img.loading = 'lazy'
-          poster.appendChild(img)
-        } else {
-          poster.textContent = 'Нет постера'
-        }
-
-        const body = el('div', 'film-card-body')
-        const name =
-          f.nameRu || f.nameEn || `Фильм #${f.filmId}`
-        const h2 = el('h2', 'film-card-title', name)
-        const meta = el(
-          'p',
-          'film-card-meta',
-          [f.year, f.type, f.rating ? `★ ${f.rating}` : '']
-            .filter(Boolean)
-            .join(' · '),
-        )
-        body.append(h2, meta)
-        card.append(poster, body)
-
-        const go = () => navigate(`/film/${f.filmId}`)
-        card.addEventListener('click', go)
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            go()
-          }
-        })
-
-        results.appendChild(card)
-      }
-
-      if (data.pagesCount > 1) {
-        const pager = el('div', 'pager')
-        if (page > 1) {
-          const prev = el('button', 'btn btn-ghost', 'Назад')
-          prev.type = 'button'
-          prev.addEventListener('click', () => void runSearch(page - 1))
-          pager.appendChild(prev)
-        }
-        if (page < data.pagesCount) {
-          const next = el('button', 'btn btn-ghost', 'Дальше')
-          next.type = 'button'
-          next.addEventListener('click', () => void runSearch(page + 1))
-          pager.appendChild(next)
-        }
-        results.appendChild(pager)
-      }
+      renderFilmCards(results, data.films)
+      renderPager(page, data.pagesCount, (p) => {
+        input.value = lastQuery
+        void runSearch(p)
+      })
     } catch (e) {
-      if (e instanceof KpApiError) {
-        showStatus(e.message, 'error')
-      } else {
-        showStatus('Неизвестная ошибка.', 'error')
-      }
+      showStatus(e instanceof ApiError ? e.message : 'Ошибка.', 'error')
     }
   }
 
   btnSearch.addEventListener('click', () => void runSearch(1))
+  btnTop.addEventListener('click', () => {
+    input.value = ''
+    void loadTop(1)
+  })
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') void runSearch(1)
   })
-
   btnById.addEventListener('click', () => {
     const q = input.value.trim()
-    if (/^\d+$/.test(q)) {
-      navigate(`/film/${q}`)
-      return
-    }
-    showStatus('Для открытия по ID введите только число.', 'error')
+    if (/^\d+$/.test(q)) navigate(`/film/${q}`)
+    else showStatus('Введите числовой ID.', 'error')
   })
+
+  await loadTop(1)
 }
